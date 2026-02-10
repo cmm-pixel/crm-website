@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Daily CRM Call Log</title>
+  <link rel="stylesheet" href="call.css">
+</head>
+<body>
+
+<div class="form-wrapper">
+
+  <div class="form-header">
+    <h2>Daily CRM Call Log</h2>
+    <p>Log client call and schedule visit</p>
+  </div>
+
+  <form id="callForm">
+
+    <!-- Booking ID (FIRST & MANDATORY) -->
+    <div class="field">
+      <label>Booking ID</label>
+      <input type="text"
+             id="bookingId"
+             name="bookingId"
+             placeholder="B-000000"
+             pattern="B-[0-9]{6}"
+             maxlength="8"
+             required>
+    </div>
+
+    <!-- Client Name -->
+    <div class="field">
+      <label>Client Name</label>
+      <input type="text" id="clientName" name="clientName" required>
+    </div>
+
+    <!-- Tower & Wing -->
+    <div class="row">
+      <div class="field">
+        <label>Tower</label>
+        <select id="tower" name="tower" required>
+          <option value="">Select</option>
+          <option value="TAPI">TAPI</option>
+          <option value="AMAZON">AMAZON</option>
+          <option value="DANUBE">DANUBE</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Wing</label>
+        <select id="wing" name="wing" required disabled>
+          <option value="">Select</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Unit & RM -->
+    <div class="row">
+      <div class="field">
+        <label>Unit</label>
+        <input type="text" id="unit" name="unit" required>
+      </div>
+
+      <div class="field">
+        <label>RM</label>
+        <select id="rm" name="rm" required>
+          <option value="">Select</option>
+          <option>RM 1</option>
+          <option>RM 2</option>
+          <option>RM 3</option>
+          <option>RM 4</option>
+          <option>RM 5</option>
+          <option>RM 6</option>
+          <option>RM 7</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Call Status -->
+    <div class="field">
+      <label>Call Status</label>
+      <select id="callStatus" name="callStatus" required>
+        <option value="">Select</option>
+        <option>Connected</option>
+        <option>Not Answered</option>
+        <option>Busy</option>
+        <option>Call Back Later</option>
+        <option>Wrong Number</option>
+      </select>
+    </div>
+
+    <!-- Call Outcome -->
+    <div class="field">
+      <label>Call Outcome Summary</label>
+      <textarea id="callSummary" name="callSummary" rows="3" required></textarea>
+    </div>
+
+    <!-- Schedule Visit -->
+    <div class="row">
+      <div class="field">
+        <label>Schedule Visit Date</label>
+        <input type="date" id="visitDate" name="visitDate" required>
+      </div>
+
+      <div class="field">
+        <label>Schedule Visit Time</label>
+        <input type="time" id="visitTime" name="visitTime" required>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="actions">
+      <button type="submit">Save Call Log</button>
+    </div>
+
+  </form>
+</div>
+
+<script src="call.js"></script>
+
+<script>
+  // Force Booking ID uppercase
+  document.getElementById("bookingId").addEventListener("input", function () {
+    this.value = this.value.toUpperCase();
+  });
+</script>
+
+</body>
+</html>
