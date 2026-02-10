@@ -1,0 +1,123 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f2f4f7;
+  margin: 0;
+  padding: 30px;
+}
+
+/* Form container */
+.form-wrapper {
+  max-width: 700px;
+  margin: auto;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+}
+
+/* Header */
+.form-header {
+  padding: 20px 25px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #fafafa;
+  text-align: center;
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #c9a227; /* Gold */
+  font-weight: 700;
+}
+
+.form-header p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Form body */
+form {
+  padding: 25px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+
+.row .field {
+  flex: 1;
+}
+
+/* Labels */
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Mandatory asterisk */
+label::after {
+  content: " *";
+  color: #d93025;
+  font-weight: bold;
+}
+
+/* Inputs */
+input,
+select {
+  width: 100%;
+  padding: 9px 10px;
+  font-size: 14px;
+  border: 1px solid #cfcfcf;
+  border-radius: 4px;
+  background: #fff;
+}
+
+input:focus,
+select:focus {
+  border-color: #0078d4;
+  outline: none;
+  background: #fdfefe;
+}
+
+/* Submit button */
+.actions {
+  text-align: center; /* better UX */
+  margin-top: 25px;
+}
+
+button {
+  background: #0078d4;
+  color: #fff;
+  border: none;
+  padding: 11px 36px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005ea6;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+}
