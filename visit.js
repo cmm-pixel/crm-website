@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("visitForm");
   const towerSelect = document.getElementById("tower");
   const wingSelect = document.getElementById("wing");
+  const submitBtn = form.querySelector("button");
 
   const wingsByTower = {
     TAPI: ["A Wing"],
@@ -34,38 +35,61 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
 
     if (!form.checkValidity()) {
-      alert("Please fill all mandatory fields.");
+      form.reportValidity();
       return;
     }
 
-    // Force-enable disabled fields
-    form.querySelectorAll(":disabled").forEach(el => el.disabled = false);
-
     const formData = new FormData(form);
-
-    // Debug proof
-    console.log("FORM DATA ↓");
-    for (const pair of formData.entries()) {
-      console.log(pair[0], "=", pair[1]);
-    }
 
     formData.append("sheet", "Client_Visit");
 
-    // ✅ NEW OFFICE-ID WEB APP URL
+    // Disable button while saving
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Saving...";
+
     fetch("https://script.google.com/macros/s/AKfycbxtlqg1g6RIlnzEtuBQa3fnnQVb-1ne2Ofu9ymnDr2r5OWbBaL4tXZ_-RsNh4Mnyaji/exec", {
       method: "POST",
       body: formData
     })
-      .then(res => res.text())
-      .then(res => {
-        alert(res);
+    .then(res => res.text())
+    .then(response => {
+
+      console.log("Server Response:", response);
+
+      // 🔴 SAME DAY DUPLICATE
+      if (response === "SAME_DAY_DUPLICATE") {
+        alert("⚠ This Booking ID already has a visit entry today.");
+        document.getElementById("bookingId").focus();
+        return;
+      }
+
+      // 🟢 SUCCESS
+      if (response === "SUCCESS") {
+        alert("Visit entry saved successfully");
         form.reset();
         wingSelect.disabled = true;
-      })
-      .catch(err => {
-        alert("Network error");
-        console.error(err);
-      });
+        return;
+      }
+
+      // 🟡 Backend error
+      if (response.startsWith("ERROR")) {
+        alert("Server Error: " + response);
+        return;
+      }
+
+      // Unexpected response
+      alert(response);
+
+    })
+    .catch(err => {
+      alert("Network error");
+      console.error(err);
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Save Visit";
+    });
+
   });
 
 });
