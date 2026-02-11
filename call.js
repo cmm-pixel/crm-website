@@ -64,14 +64,14 @@ form.addEventListener("submit", function (e) {
 
     console.log("Server Response:", data);
 
-    // 🔴 Duplicate case
-    if (data === "DUPLICATE") {
-      alert("⚠ Duplicate Booking ID! Entry already exists.");
+    // 🔴 SAME DAY DUPLICATE CASE
+    if (data === "SAME_DAY_DUPLICATE") {
+      alert("⚠ This Booking ID already has an entry today.");
       document.getElementById("bookingId").focus();
       return;
     }
 
-    // 🟢 Success case
+    // 🟢 SUCCESS CASE
     if (data === "SUCCESS") {
       alert("Call log saved successfully");
       form.reset();
@@ -79,16 +79,21 @@ form.addEventListener("submit", function (e) {
       return;
     }
 
-    // 🟡 Unexpected response
+    // 🟡 Backend error
+    if (data.startsWith("ERROR")) {
+      alert("Server Error: " + data);
+      return;
+    }
+
+    // 🟠 Unexpected response
     alert("Unexpected server response: " + data);
 
   })
   .catch(error => {
-    console.error("Error:", error);
+    console.error("Network Error:", error);
     alert("Failed to save. Please check internet connection.");
   })
   .finally(() => {
-    // Re-enable button
     submitBtn.disabled = false;
     submitBtn.textContent = "Save Call Log";
   });
