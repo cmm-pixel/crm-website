@@ -16,7 +16,7 @@
 
   <form id="callForm">
 
-    <!-- Booking ID (FIRST & MANDATORY) -->
+    <!-- Booking ID (NOT REQUIRED) -->
     <div class="field">
       <label>Booking ID</label>
       <input type="text"
@@ -24,8 +24,7 @@
              name="bookingId"
              placeholder="B-000000"
              pattern="B-[0-9]{6}"
-             maxlength="8"
-             required>
+             maxlength="8">
     </div>
 
     <!-- Client Name -->
@@ -95,20 +94,19 @@
       <textarea id="callSummary" name="callSummary" rows="3" required></textarea>
     </div>
 
-    <!-- Schedule Visit -->
+    <!-- Optional Visit -->
     <div class="row">
       <div class="field">
         <label>Schedule Visit Date</label>
-        <input type="date" id="visitDate" name="visitDate" required>
+        <input type="date" id="visitDate" name="visitDate">
       </div>
 
       <div class="field">
         <label>Schedule Visit Time</label>
-        <input type="time" id="visitTime" name="visitTime" required>
+        <input type="time" id="visitTime" name="visitTime">
       </div>
     </div>
 
-    <!-- Submit -->
     <div class="actions">
       <button type="submit">Save Call Log</button>
     </div>
@@ -119,7 +117,6 @@
 <script src="call.js"></script>
 
 <script>
-  // Force Booking ID uppercase
   document.getElementById("bookingId").addEventListener("input", function () {
     this.value = this.value.toUpperCase();
   });
