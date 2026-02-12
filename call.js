@@ -1,105 +1,143 @@
 // =============================
-// Tower → Wing Mapping
+// Auto Search + Submit Logic
 // =============================
 document.addEventListener("DOMContentLoaded", function () {
 
-  const towerSelect = document.getElementById("tower");
-  const wingSelect = document.getElementById("wing");
+  const bookingInput = document.getElementById("bookingId");
+  const searchBtn = document.getElementById("searchBtn");
+  const statusText = document.getElementById("bookingStatus");
+
+  const clientNameInput = document.getElementById("clientName");
+  const towerInput = document.getElementById("tower");
+  const wingInput = document.getElementById("wing");
+  const unitInput = document.getElementById("unit");
+
   const form = document.getElementById("callForm");
   const submitBtn = form.querySelector("button");
 
-  const wingsByTower = {
-    TAPI: ["A Wing"],
-    AMAZON: ["A Wing", "B Wing"],
-    DANUBE: ["A Wing", "B Wing", "C Wing", "D Wing"]
-  };
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtlqg1g6RIlnzEtuBQa3fnnQVb-1ne2Ofu9ymnDr2r5OWbBaL4tXZ_-RsNh4Mnyaji/exec";
 
-  wingSelect.disabled = true;
+  // =============================
+  // SEARCH FUNCTION (Reusable)
+  // =============================
+  function searchBooking() {
 
-  towerSelect.addEventListener("change", function () {
-    wingSelect.innerHTML = '<option value="">Select</option>';
-    wingSelect.disabled = true;
+    const bookingId = bookingInput.value.trim();
+    if (!bookingId) return;
 
-    const selectedTower = this.value;
+    statusText.textContent = "Searching...";
+    statusText.style.color = "#555";
 
-    if (selectedTower && wingsByTower[selectedTower]) {
-      wingsByTower[selectedTower].forEach(wing => {
-        const option = document.createElement("option");
-        option.value = wing;
-        option.textContent = wing;
-        wingSelect.appendChild(option);
+    if (searchBtn) searchBtn.disabled = true;
+
+    fetch(WEB_APP_URL + "?bookingId=" + encodeURIComponent(bookingId))
+      .then(res => res.json())
+      .then(data => {
+
+        if (data.error) {
+
+          statusText.textContent = "❌ Booking ID not found";
+          statusText.style.color = "red";
+
+          clientNameInput.value = "";
+          towerInput.value = "";
+          wingInput.value = "";
+          unitInput.value = "";
+          return;
+        }
+
+        clientNameInput.value = data.clientName || "";
+        towerInput.value = data.tower || "";
+        wingInput.value = data.wing || "";
+        unitInput.value = data.unit || "";
+
+        statusText.textContent = "✅ Booking Verified";
+        statusText.style.color = "green";
+      })
+      .catch(err => {
+        console.error("Search Error:", err);
+        statusText.textContent = "⚠ Server error";
+        statusText.style.color = "red";
+      })
+      .finally(() => {
+        if (searchBtn) searchBtn.disabled = false;
       });
+  }
 
-      wingSelect.disabled = false;
+  // =============================
+  // ENTER KEY SEARCH
+  // =============================
+  bookingInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      searchBooking();
     }
   });
 
   // =============================
-  // Form Submit
+  // SEARCH BUTTON CLICK
+  // =============================
+  if (searchBtn) {
+    searchBtn.addEventListener("click", function () {
+      searchBooking();
+    });
+  }
+
+  // =============================
+  // FORM SUBMIT
   // =============================
   form.addEventListener("submit", function (e) {
+
     e.preventDefault();
 
-    // Native browser validation
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
     }
 
     const formData = new FormData(form);
-
-    // Optional fields
     formData.set("visitDate", formData.get("visitDate") || "");
     formData.set("visitTime", formData.get("visitTime") || "");
-
     formData.append("sheet", "Call_Log");
 
-    // Disable button while submitting
     submitBtn.disabled = true;
     submitBtn.textContent = "Saving...";
 
-    fetch("https://script.google.com/macros/s/AKfycbxtlqg1g6RIlnzEtuBQa3fnnQVb-1ne2Ofu9ymnDr2r5OWbBaL4tXZ_-RsNh4Mnyaji/exec", {
+    fetch(WEB_APP_URL, {
       method: "POST",
       body: formData
     })
-    .then(response => response.text())
-    .then(data => {
+      .then(response => response.text())
+      .then(data => {
 
-      console.log("Server Response:", data);
+        if (data === "SAME_DAY_DUPLICATE") {
+          alert("⚠ This Booking ID already has an entry today.");
+          bookingInput.focus();
+          return;
+        }
 
-      // SAME DAY DUPLICATE
-      if (data === "SAME_DAY_DUPLICATE") {
-        alert("⚠ This Booking ID already has an entry today.");
-        document.getElementById("bookingId").focus();
-        return;
-      }
+        if (data === "SUCCESS") {
+          alert("Call log saved successfully");
+          form.reset();
+          statusText.textContent = "";
+          return;
+        }
 
-      // SUCCESS
-      if (data === "SUCCESS") {
-        alert("Call log saved successfully");
-        form.reset();
-        wingSelect.disabled = true;
-        return;
-      }
+        if (data.startsWith("ERROR")) {
+          alert("Server Error: " + data);
+          return;
+        }
 
-      // BACKEND ERROR
-      if (data.startsWith("ERROR")) {
-        alert("Server Error: " + data);
-        return;
-      }
-
-      // Unexpected
-      alert("Unexpected server response: " + data);
-
-    })
-    .catch(error => {
-      console.error("Network Error:", error);
-      alert("Failed to save. Please check internet connection.");
-    })
-    .finally(() => {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Save Call Log";
-    });
+        alert("Unexpected server response: " + data);
+      })
+      .catch(error => {
+        console.error("Network Error:", error);
+        alert("Failed to save. Please check internet connection.");
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Save Call Log";
+      });
 
   });
 
