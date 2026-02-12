@@ -14,18 +14,25 @@
     <p>Fill visit details carefully</p>
   </div>
 
-  <form id="visitForm">
+  <form id="visitForm" autocomplete="off">
 
-    <!-- Booking ID -->
+    <!-- Booking ID + Search -->
     <div class="field">
       <label>Booking ID</label>
-      <input type="text"
-             id="bookingId"
-             name="bookingId"
-             placeholder="B-000000"
-             pattern="B-[0-9]{6}"
-             maxlength="8"
-             required>
+
+      <div style="display:flex; gap:10px;">
+        <input type="text"
+               id="bookingId"
+               name="bookingId"
+               placeholder="B-000000"
+               pattern="B-[0-9]{6}"
+               maxlength="8"
+               required>
+
+        <button type="button" id="searchBtn">Search</button>
+      </div>
+
+      <small id="bookingStatus" style="color:#555;"></small>
     </div>
 
     <!-- Client Name -->
@@ -52,7 +59,6 @@
 
       <div class="field">
         <label>Wing</label>
-        <!-- ✅ NOT DISABLED -->
         <select id="wing" name="wing" required>
           <option value="">Select</option>
         </select>
