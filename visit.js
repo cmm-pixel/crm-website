@@ -1,37 +1,119 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+  const form = document.getElementById("visitForm");
+  const submitBtn = form.querySelector("button");
+
+  const bookingInput = document.getElementById("bookingId");
+  const searchBtn = document.getElementById("searchBtn");
+  const statusText = document.getElementById("bookingStatus");
+
+  const clientNameInput = document.getElementById("clientName");
+  const towerSelect = document.getElementById("tower");
+  const wingSelect = document.getElementById("wing");
+  const unitInput = document.getElementById("unit");
+
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtlqg1g6RIlnzEtuBQa3fnnQVb-1ne2Ofu9ymnDr2r5OWbBaL4tXZ_-RsNh4Mnyaji/exec";
+
   // =============================
   // Tower → Wing Mapping
   // =============================
-  const form = document.getElementById("visitForm");
-  const towerSelect = document.getElementById("tower");
-  const wingSelect = document.getElementById("wing");
-  const submitBtn = form.querySelector("button");
-
   const wingsByTower = {
     TAPI: ["A Wing"],
     AMAZON: ["A Wing", "B Wing"],
     DANUBE: ["A Wing", "B Wing", "C Wing", "D Wing"]
   };
 
-  wingSelect.disabled = true;
+  function populateWings(towerValue, selectedWing = "") {
 
-  towerSelect.addEventListener("change", function () {
     wingSelect.innerHTML = '<option value="">Select</option>';
     wingSelect.disabled = true;
 
-    if (this.value && wingsByTower[this.value]) {
-      wingsByTower[this.value].forEach(wing => {
-        wingSelect.add(new Option(wing, wing));
-      });
-      wingSelect.disabled = false;
+    if (!towerValue || !wingsByTower[towerValue]) return;
+
+    wingsByTower[towerValue].forEach(wing => {
+      const option = new Option(wing, wing);
+      wingSelect.add(option);
+    });
+
+    wingSelect.disabled = false;
+
+    if (selectedWing) {
+      wingSelect.value = selectedWing;
     }
+  }
+
+  towerSelect.addEventListener("change", function () {
+    populateWings(this.value);
   });
 
   // =============================
-  // Form submit
+  // SEARCH FUNCTION
+  // =============================
+  function searchBooking() {
+
+    const bookingId = bookingInput.value.trim();
+    if (!bookingId) return;
+
+    statusText.textContent = "Searching...";
+    statusText.style.color = "#555";
+
+    searchBtn.disabled = true;
+
+    fetch(WEB_APP_URL + "?bookingId=" + encodeURIComponent(bookingId))
+      .then(res => res.json())
+      .then(data => {
+
+        if (data.error) {
+
+          statusText.textContent = "❌ Booking ID not found";
+          statusText.style.color = "red";
+
+          clientNameInput.value = "";
+          towerSelect.value = "";
+          wingSelect.innerHTML = '<option value="">Select</option>';
+          wingSelect.disabled = true;
+          unitInput.value = "";
+          return;
+        }
+
+        clientNameInput.value = data.clientName || "";
+        towerSelect.value = (data.tower || "").toUpperCase();
+
+        populateWings(towerSelect.value, data.wing || "");
+
+        unitInput.value = data.unit || "";
+
+        statusText.textContent = "✅ Booking Verified";
+        statusText.style.color = "green";
+      })
+      .catch(err => {
+        console.error(err);
+        statusText.textContent = "⚠ Server error";
+        statusText.style.color = "red";
+      })
+      .finally(() => {
+        searchBtn.disabled = false;
+      });
+  }
+
+  // ENTER KEY SEARCH
+  bookingInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      searchBooking();
+    }
+  });
+
+  // SEARCH BUTTON
+  if (searchBtn) {
+    searchBtn.addEventListener("click", searchBooking);
+  }
+
+  // =============================
+  // FORM SUBMIT
   // =============================
   form.addEventListener("submit", function (e) {
+
     e.preventDefault();
 
     if (!form.checkValidity()) {
@@ -40,55 +122,50 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const formData = new FormData(form);
-
     formData.append("sheet", "Client_Visit");
 
-    // Disable button while saving
     submitBtn.disabled = true;
     submitBtn.textContent = "Saving...";
 
-    fetch("https://script.google.com/macros/s/AKfycbxtlqg1g6RIlnzEtuBQa3fnnQVb-1ne2Ofu9ymnDr2r5OWbBaL4tXZ_-RsNh4Mnyaji/exec", {
+    fetch(WEB_APP_URL, {
       method: "POST",
       body: formData
     })
-    .then(res => res.text())
-    .then(response => {
+      .then(res => res.text())
+      .then(response => {
 
-      console.log("Server Response:", response);
+        console.log("Server Response:", response);
 
-      // 🔴 SAME DAY DUPLICATE
-      if (response === "SAME_DAY_DUPLICATE") {
-        alert("⚠ This Booking ID already has a visit entry today.");
-        document.getElementById("bookingId").focus();
-        return;
-      }
+        if (response === "SAME_DAY_DUPLICATE") {
+          alert("⚠ This Booking ID already has a visit entry today.");
+          bookingInput.focus();
+          return;
+        }
 
-      // 🟢 SUCCESS
-      if (response === "SUCCESS") {
-        alert("Visit entry saved successfully");
-        form.reset();
-        wingSelect.disabled = true;
-        return;
-      }
+        if (response === "SUCCESS") {
+          alert("Visit entry saved successfully");
+          form.reset();
+          wingSelect.innerHTML = '<option value="">Select</option>';
+          wingSelect.disabled = true;
+          statusText.textContent = "";
+          return;
+        }
 
-      // 🟡 Backend error
-      if (response.startsWith("ERROR")) {
-        alert("Server Error: " + response);
-        return;
-      }
+        if (response.startsWith("ERROR")) {
+          alert("Server Error: " + response);
+          return;
+        }
 
-      // Unexpected response
-      alert(response);
-
-    })
-    .catch(err => {
-      alert("Network error");
-      console.error(err);
-    })
-    .finally(() => {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Save Visit";
-    });
+        alert(response);
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Network error");
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Save Visit";
+      });
 
   });
 
