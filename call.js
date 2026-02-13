@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const unitInput = document.getElementById("unit");
 
   const form = document.getElementById("callForm");
-  const submitBtn = form.querySelector("button");
+  const submitBtn = document.getElementById("submitBtn");
+
 
   const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtlqg1g6RIlnzEtuBQa3fnnQVb-1ne2Ofu9ymnDr2r5OWbBaL4tXZ_-RsNh4Mnyaji/exec";
 
