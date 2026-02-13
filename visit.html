@@ -59,7 +59,7 @@
 
       <div class="field">
         <label>Wing</label>
-        <select id="wing" name="wing" required>
+        <select id="wing" name="wing" required disabled>
           <option value="">Select</option>
         </select>
       </div>
@@ -147,14 +147,33 @@
       <label>Payment</label>
       <select id="payment" name="payment" required>
         <option value="">Select</option>
-        <option>Received</option>
-        <option>Not Received</option>
+        <option value="Received">Received</option>
+        <option value="Not Received">Not Received</option>
       </select>
+    </div>
+
+    <!-- ============================= -->
+    <!-- PAYMENT SECTION -->
+    <!-- ============================= -->
+    <div id="paymentSection" style="display:none; margin-top:20px; border-top:1px solid #ddd; padding-top:20px;">
+
+      <h3>Payment Details</h3>
+
+      <!-- Dynamic Payments Will Appear Here -->
+      <div id="paymentsContainer"></div>
+
+      <!-- Add Payment Button -->
+      <div style="margin-top:15px;">
+        <button type="button" id="addPaymentBtn">
+          + Add Another Payment
+        </button>
+      </div>
+
     </div>
 
     <!-- Submit -->
     <div class="actions">
-      <button type="submit">Save Visit</button>
+      <button type="submit" id="submitBtn">Save Visit</button>
     </div>
 
   </form>
