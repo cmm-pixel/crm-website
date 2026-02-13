@@ -9,14 +9,21 @@ body {
   padding: 30px;
 }
 
+/* ============================= */
+/* Form Wrapper */
+/* ============================= */
 .form-wrapper {
-  max-width: 700px;
+  max-width: 720px;
   margin: auto;
   background: #fff;
   border: 1px solid #dcdcdc;
   border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
+/* ============================= */
+/* Header */
+/* ============================= */
 .form-header {
   padding: 20px 25px;
   border-bottom: 1px solid #e5e5e5;
@@ -37,6 +44,9 @@ body {
   color: #666;
 }
 
+/* ============================= */
+/* Form Body */
+/* ============================= */
 form {
   padding: 25px;
 }
@@ -54,6 +64,9 @@ form {
   flex: 1;
 }
 
+/* ============================= */
+/* Labels */
+/* ============================= */
 label {
   display: block;
   font-size: 13px;
@@ -61,25 +74,68 @@ label {
   font-weight: bold;
 }
 
-label::after {
+/* Only show * for required fields */
+input[required] + label::after,
+select[required] + label::after,
+textarea[required] + label::after {
   content: " *";
   color: #d93025;
 }
 
-input, select, textarea {
+/* ============================= */
+/* Inputs */
+/* ============================= */
+input,
+select,
+textarea {
   width: 100%;
   padding: 9px 10px;
   font-size: 14px;
   border: 1px solid #cfcfcf;
   border-radius: 4px;
+  transition: 0.2s ease;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   border-color: #0078d4;
   outline: none;
   background: #fdfefe;
 }
 
+/* Disabled style */
+select:disabled,
+input:disabled {
+  background: #f3f3f3;
+  cursor: not-allowed;
+}
+
+/* ============================= */
+/* Booking Search Layout */
+/* ============================= */
+.field div {
+  display: flex;
+  gap: 10px;
+}
+
+.field div input {
+  flex: 1;
+}
+
+/* ============================= */
+/* Status Text */
+/* ============================= */
+#bookingStatus {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ============================= */
+/* Buttons */
+/* ============================= */
 .actions {
   text-align: center;
   margin-top: 25px;
@@ -93,14 +149,32 @@ button {
   font-size: 14px;
   border-radius: 4px;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
 button:hover {
   background: #005ea6;
 }
 
+button:disabled {
+  background: #9aa0a6;
+  cursor: not-allowed;
+}
+
+/* ============================= */
+/* Responsive */
+/* ============================= */
 @media (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
+
   .row {
     flex-direction: column;
+    gap: 0;
+  }
+
+  .form-wrapper {
+    border-radius: 4px;
   }
 }
